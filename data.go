@@ -21,6 +21,9 @@ type Data struct {
 type Item struct {
 	ID           string
 	InventoryID  string
+	Name         string
+	Description  string
+	Help         string
 	Value        string
 	Section      string
 	Price        int
@@ -33,6 +36,9 @@ func (d *Data) fromSourceItem(sItems []sourceItem, section string, sectionPrice 
 		item := &Item{
 			ID:           sItem.ID,
 			InventoryID:  sItem.InventoryID,
+			Name:         sItem.Name,
+			Description:  sItem.Description,
+			Help:         sItem.Help,
 			Value:        "yes",
 			Price:        sItem.Price,
 			Section:      section,
@@ -122,6 +128,7 @@ func (d *Data) CalculateVerbose(input map[string]string) (int, map[string]*Item)
 		// smtp relay should be free if email service is selected
 		if item.InventoryID == "exim_relay_relay_use" && withEmail {
 			freeRelay := *item
+			freeRelay.Name = freeRelay.Name + " (free with email service)"
 			freeRelay.Price = 0
 			freeRelay.SectionPrice = 0
 
@@ -135,6 +142,7 @@ func (d *Data) CalculateVerbose(input map[string]string) (int, map[string]*Item)
 			verbose[item.Section] = &Item{
 				ID:          "section-" + item.Section,
 				InventoryID: "section_" + item.Section,
+				Name:        item.Section,
 				Price:       item.SectionPrice,
 			}
 			continue

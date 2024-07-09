@@ -211,6 +211,9 @@ func TestCalculateVerboseWithSectionPrice(t *testing.T) {
 				ID:           "item1",
 				InventoryID:  "inv1",
 				Value:        "yes",
+				Name:         "Item 1",
+				Description:  "Item 1 description",
+				Help:         "/help/item1",
 				Price:        100,
 				Section:      "section1",
 				SectionPrice: 200,
@@ -254,13 +257,14 @@ func TestCalculateVerboseWithSectionPrice(t *testing.T) {
 		"section1": {
 			ID:          "section-section1",
 			InventoryID: "section_section1",
+			Name:        "section1",
 			Price:       200,
 		},
 	}
 	for key, expectedItem := range expectedVerbose {
 		if item, ok := verbose[key]; !ok {
 			t.Errorf("Expected verbose item with key %s, but not found", key)
-		} else if item.ID != expectedItem.ID || item.InventoryID != expectedItem.InventoryID || item.Price != expectedItem.Price {
+		} else if item.ID != expectedItem.ID || item.InventoryID != expectedItem.InventoryID || item.Price != expectedItem.Price || item.Name != expectedItem.Name || item.Description != expectedItem.Description || item.Help != expectedItem.Help {
 			t.Errorf("Expected verbose item %v, but got %v", expectedItem, item)
 		}
 	}

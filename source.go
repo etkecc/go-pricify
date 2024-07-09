@@ -23,9 +23,12 @@ type sourceSectionItem struct {
 }
 
 type sourceItem struct {
-	ID          string `json:"id"`
-	InventoryID string `json:"iid"`
-	Price       int    `json:"price"`
+	ID          string `json:"id"`          // Order form item ID
+	InventoryID string `json:"iid"`         // Inventory ID
+	Name        string `json:"name"`        // Human-readable name
+	Description string `json:"description"` // Human-readable description
+	Help        string `json:"help"`        // Help link (may not contain the full URL, just path)
+	Price       int    `json:"price"`       // Price
 }
 
 func parseSource(data []byte) (*sourceModel, error) {
