@@ -1,3 +1,3 @@
-module gitlab.com/etke.cc/go/pricify
+module github.com/etkecc/go-pricify
 
 go 1.17
