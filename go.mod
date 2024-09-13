@@ -1,3 +1,3 @@
 module github.com/etkecc/go-pricify
 
-go 1.17
+go 1.22
