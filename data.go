@@ -38,6 +38,12 @@ type Item struct {
 // Clone creates a copy of the item
 func (i *Item) Clone() *Item {
 	dup := *i
+	if i.RegionPrice != nil {
+		dup.RegionPrice = make(map[string]int, len(i.RegionPrice))
+		for key, value := range i.RegionPrice {
+			dup.RegionPrice[key] = value
+		}
+	}
 	return &dup
 }
 
@@ -66,6 +72,9 @@ func (d *Data) fromSourceItem(sItems []*sourceItem, sectionID, sectionName, sect
 
 // fromSourceSection coverts source sections into the []*Item and adds them to the Data
 func (d *Data) fromSourceSection(ssItem *sourceSectionItem, sectionID string, sectionPrice int) {
+	if ssItem == nil {
+		return
+	}
 	for _, sItem := range ssItem.Options {
 		item := &Item{
 			ID:           ssItem.ID,
@@ -114,19 +123,28 @@ func (d *Data) Calculate(input map[string]string) int {
 //nolint:gocognit // needs refactoring
 func (d *Data) CalculateVerbose(input map[string]string) (total int, verbose map[string]*Item) {
 	verbose = map[string]*Item{}
-	region := input["etke_service_server_location"]
+	normalized := map[string]string{}
+	for entry, value := range input {
+		key := strings.TrimSpace(strings.ToLower(entry))
+		val := strings.TrimSpace(strings.ToLower(value))
+		if key == "" {
+			continue
+		}
+		normalized[key] = val
+	}
+
+	region := normalized["etke_service_server_location"]
 
 	// default value for etke_base_matrix
-	_, iidMatrix := input["etke_base_matrix"]
-	_, idMatrix := input["matrix"]
+	_, iidMatrix := normalized["etke_base_matrix"]
+	_, idMatrix := normalized["matrix"]
 	if !iidMatrix && !idMatrix {
 		input["etke_base_matrix"] = "yes"
+		normalized["etke_base_matrix"] = "yes"
 	}
 
 	var withEmail bool
-	for entry, value := range input {
-		entry = strings.TrimSpace(strings.ToLower(entry))
-		value = strings.TrimSpace(strings.ToLower(value))
+	for entry, value := range normalized {
 		if _, ok := forbiddenValues[value]; ok {
 			continue
 		}
@@ -140,9 +158,7 @@ func (d *Data) CalculateVerbose(input map[string]string) (total int, verbose map
 	}
 
 	sectionPriceAdded := map[string]bool{}
-	for entry, value := range input {
-		entry = strings.TrimSpace(strings.ToLower(entry))
-		value = strings.TrimSpace(strings.ToLower(value))
+	for entry, value := range normalized {
 		if _, ok := forbiddenValues[value]; ok {
 			continue
 		}
