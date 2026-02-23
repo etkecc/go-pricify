@@ -21,6 +21,7 @@ type Data struct {
 // Item is specific item parsed from the source
 type Item struct {
 	ID                 string
+	VID                int64
 	InventoryID        string
 	Name               string
 	Description        string
@@ -28,6 +29,7 @@ type Item struct {
 	Value              string
 	Price              int
 	SectionID          string
+	SectionVID         int64
 	SectionName        string
 	SectionDescription string
 	SectionHelp        string
@@ -48,10 +50,11 @@ func (i *Item) Clone() *Item {
 }
 
 // fromSourceItem converts source items into the []*Item and adds them to the Data
-func (d *Data) fromSourceItem(sItems []*sourceItem, sectionID, sectionName, sectionDescription, sectionHelp string, sectionPrice int) {
+func (d *Data) fromSourceItem(sItems []*sourceItem, sectionID, sectionName, sectionDescription, sectionHelp string, sectionVID int64, sectionPrice int) {
 	for _, sItem := range sItems {
 		item := &Item{
 			ID:                 sItem.ID,
+			VID:                sItem.VID,
 			InventoryID:        sItem.InventoryID,
 			Name:               sItem.Name,
 			Description:        sItem.Description,
@@ -59,6 +62,7 @@ func (d *Data) fromSourceItem(sItems []*sourceItem, sectionID, sectionName, sect
 			Value:              "yes",
 			Price:              sItem.Price,
 			SectionID:          sectionID,
+			SectionVID:         sectionVID,
 			SectionName:        sectionName,
 			SectionDescription: sectionDescription,
 			SectionHelp:        sectionHelp,
@@ -78,6 +82,7 @@ func (d *Data) fromSourceSection(ssItem *sourceSectionItem, sectionID string, se
 	for _, sItem := range ssItem.Options {
 		item := &Item{
 			ID:           ssItem.ID,
+			VID:          sItem.VID,
 			InventoryID:  ssItem.InventoryID,
 			Value:        sItem.ID,
 			Price:        sItem.Price,
@@ -184,6 +189,7 @@ func (d *Data) CalculateVerbose(input map[string]string) (total int, verbose map
 			sectionPriceAdded[item.SectionID] = true
 			verbose[item.SectionID] = &Item{
 				ID:          "section-" + item.SectionID,
+				VID:         item.SectionVID,
 				InventoryID: "section_" + item.SectionID,
 				Name:        item.SectionName,
 				Description: item.SectionDescription,

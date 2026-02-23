@@ -13,6 +13,7 @@ const fixtureComponentsJSON = `{
   "bases": [
     {
       "id": "matrix",
+			"vid": 123,
       "iid": "etke_base_matrix",
       "name": "Matrix base",
       "description": "Matrix base plan",
@@ -29,12 +30,14 @@ const fixtureComponentsJSON = `{
     "options": [
       {
         "id": "small",
+				"vid": 124,
         "iid": "etke_instance_size",
         "name": "Small",
         "price": 50
       },
       {
         "id": "large",
+				"vid": 125,
         "iid": "etke_instance_size",
         "name": "Large",
         "price": 80,
@@ -53,6 +56,7 @@ const fixtureComponentsJSON = `{
     "options": [
       {
         "id": "basic",
+				"vid": 126,
         "iid": "etke_support_level",
         "name": "Basic",
         "price": 10
@@ -62,6 +66,7 @@ const fixtureComponentsJSON = `{
   "matrixApps": [
     {
       "id": "app",
+			"vid": 127,
       "iid": "matrix_app",
       "name": "Matrix app",
       "description": "",
@@ -72,6 +77,7 @@ const fixtureComponentsJSON = `{
   "matrixBots": [
     {
       "id": "bot",
+			"vid": 128,
       "iid": "matrix_bot",
       "name": "Matrix bot",
       "description": "",
@@ -82,6 +88,7 @@ const fixtureComponentsJSON = `{
   "matrixBridges": [
     {
       "id": "bridge_a",
+			"vid": 129,
       "iid": "matrix_bridge_a",
       "name": "Bridge A",
       "description": "",
@@ -90,6 +97,7 @@ const fixtureComponentsJSON = `{
     },
     {
       "id": "bridge_b",
+			"vid": 130,
       "iid": "matrix_bridge_b",
       "name": "Bridge B",
       "description": "",
@@ -97,10 +105,12 @@ const fixtureComponentsJSON = `{
       "price": 20
     }
   ],
+  "matrixBridgesVID": 555,
   "matrixBridgesPrice": 200,
   "additionalMatrixServices": [
     {
       "id": "smtp",
+			"vid": 131,
       "iid": "exim_relay_relay_use",
       "name": "SMTP relay",
       "description": "",
@@ -111,6 +121,7 @@ const fixtureComponentsJSON = `{
   "additionalServices": [
     {
       "id": "email",
+			"vid": 132,
       "iid": "etke_service_email",
       "name": "Email service",
       "description": "",
@@ -132,6 +143,7 @@ const fixtureArchiveJSON = `{
       "price": 111
     }
   ],
+  "matrixBridgesVID": 777,
   "instances": {
     "id": "instances",
     "iid": "etke_instance_size",
@@ -185,6 +197,8 @@ func TestSourceModelAppendAndInit(t *testing.T) {
 			InventoryID: "etke_instance_size",
 			Options:     []sourceItem{opt},
 		},
+		MatrixBridgesVID:   777,
+		MatrixBridgesPrice: 200,
 	}
 
 	s1.append(s2)
@@ -197,6 +211,25 @@ func TestSourceModelAppendAndInit(t *testing.T) {
 	}
 	if len(s1.Instances.Options) != 1 {
 		t.Fatalf("expected 1 instance option, got %d", len(s1.Instances.Options))
+	}
+	if s1.MatrixBridgesVID != 777 {
+		t.Fatalf("expected MatrixBridgesVID to be copied, got %d", s1.MatrixBridgesVID)
+	}
+	if s1.MatrixBridgesPrice != 200 {
+		t.Fatalf("expected MatrixBridgesPrice to be copied, got %d", s1.MatrixBridgesPrice)
+	}
+
+	s1.MatrixBridgesVID = 555
+	s1.MatrixBridgesPrice = 150
+	s1.append(&sourceModel{
+		MatrixBridgesVID:   999,
+		MatrixBridgesPrice: 300,
+	})
+	if s1.MatrixBridgesVID != 555 {
+		t.Fatalf("expected MatrixBridgesVID to prefer primary, got %d", s1.MatrixBridgesVID)
+	}
+	if s1.MatrixBridgesPrice != 150 {
+		t.Fatalf("expected MatrixBridgesPrice to prefer primary, got %d", s1.MatrixBridgesPrice)
 	}
 }
 
@@ -381,6 +414,9 @@ func TestCalculateVerboseRegionPrice(t *testing.T) {
 	if item == nil {
 		t.Fatal("expected verbose to include instance item")
 	}
+	if item.VID != 125 {
+		t.Fatalf("expected instance VID 125, got %d", item.VID)
+	}
 	if item.Price != 70 {
 		t.Fatalf("expected region price 70, got %d", item.Price)
 	}
@@ -449,6 +485,9 @@ func TestCalculateVerboseSectionPriceOnce(t *testing.T) {
 	if verbose["matrix_bridges"] == nil {
 		t.Fatal("expected verbose to include section entry")
 	}
+	if verbose["matrix_bridges"].VID != 555 {
+		t.Fatalf("expected section VID 555, got %d", verbose["matrix_bridges"].VID)
+	}
 	bridgeCount := 0
 	if verbose["matrix_bridge_a"] != nil {
 		bridgeCount++
@@ -471,9 +510,18 @@ func TestCalculateVerboseMixedSections(t *testing.T) {
 		"etke_instance_size": "small",
 	}
 
-	total, _ := data.CalculateVerbose(input)
+	total, verbose := data.CalculateVerbose(input)
 	if total != 261 {
 		t.Fatalf("expected total 261, got %d", total)
+	}
+	if verbose["matrix_app"] == nil || verbose["matrix_app"].VID != 127 {
+		t.Fatalf("expected matrix app VID 127, got %+v", verbose["matrix_app"])
+	}
+	if verbose["matrix_bot"] == nil || verbose["matrix_bot"].VID != 128 {
+		t.Fatalf("expected matrix bot VID 128, got %+v", verbose["matrix_bot"])
+	}
+	if verbose["etke_instance_size"] == nil || verbose["etke_instance_size"].VID != 124 {
+		t.Fatalf("expected instance VID 124, got %+v", verbose["etke_instance_size"])
 	}
 }
 
@@ -536,6 +584,7 @@ func TestNewUsesArchiveAndCacheOnError(t *testing.T) {
 		switch req.URL.String() {
 		case componentsURL:
 			body := strings.ReplaceAll(fixtureComponentsJSON, "ARCHIVE_URL", archiveURL)
+			body = strings.ReplaceAll(body, "\"matrixBridgesVID\": 555,\n", "")
 			return testResponse(body), nil
 		case archiveURL:
 			return testResponse(fixtureArchiveJSON), nil
@@ -550,6 +599,16 @@ func TestNewUsesArchiveAndCacheOnError(t *testing.T) {
 	}
 	if data.find("instances", "xlarge") == nil {
 		t.Fatal("expected archive instance option to be available")
+	}
+	_, verbose := data.CalculateVerbose(map[string]string{
+		"matrix":          "no",
+		"matrix_bridge_a": "yes",
+	})
+	if verbose["matrix_bridges"] == nil {
+		t.Fatal("expected verbose to include matrix bridges section")
+	}
+	if verbose["matrix_bridges"].VID != 777 {
+		t.Fatalf("expected archived section VID 777, got %d", verbose["matrix_bridges"].VID)
 	}
 
 	setCache(data)
