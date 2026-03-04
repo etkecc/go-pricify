@@ -13,120 +13,129 @@ const fixtureComponentsJSON = `{
   "bases": [
     {
       "id": "matrix",
-			"vid": 123,
+      "vid": 101,
       "iid": "etke_base_matrix",
-      "name": "Matrix base",
-      "description": "Matrix base plan",
-      "help": "/help/matrix",
-      "price": 100
+      "name": "Base",
+      "description": "Base plan for tests",
+      "help": "/help/base",
+      "price": 11
     }
   ],
   "instances": {
-    "id": "instances",
-    "iid": "etke_instance_size",
-    "name": "Instance size",
-    "description": "Instance sizing",
-    "help": "/help/instance",
+    "id": "turnkey",
+    "iid": "etke_service_server",
+    "name": "Servers",
+    "description": "Server plans for tests",
+    "help": "/help/servers",
     "options": [
       {
-        "id": "small",
-				"vid": 124,
-        "iid": "etke_instance_size",
-        "name": "Small",
-        "price": 50
+        "id": "plan_a",
+        "vid": 201,
+        "iid": "etke_service_server",
+        "name": "Plan A",
+        "price": 21,
+        "regions": ["r1", "r2"]
       },
       {
-        "id": "large",
-				"vid": 125,
-        "iid": "etke_instance_size",
-        "name": "Large",
-        "price": 80,
-        "price_region": {
-          "eu": 70
-        }
+        "id": "plan_b",
+        "vid": 202,
+        "iid": "etke_service_server",
+        "name": "Plan B",
+        "price": 31,
+        "regions": ["r3"]
+      },
+      {
+        "id": "plan_b",
+        "vid": 203,
+        "iid": "etke_service_server",
+        "name": "Plan B",
+        "price": 41,
+        "regions": ["r4"]
       }
     ]
   },
   "support": {
-    "id": "support",
-    "iid": "etke_support_level",
-    "name": "Support level",
-    "description": "Support plans",
+    "id": "service-support",
+    "iid": "etke_service_support",
+    "name": "Support",
+    "description": "Support options for tests",
     "help": "/help/support",
     "options": [
       {
         "id": "basic",
-				"vid": 126,
-        "iid": "etke_support_level",
         "name": "Basic",
-        "price": 10
+        "price": 0
+      },
+      {
+        "id": "dedicated",
+        "vid": 301,
+        "name": "Dedicated",
+        "price": 101
       }
     ]
   },
   "matrixApps": [
     {
-      "id": "app",
-			"vid": 127,
-      "iid": "matrix_app",
-      "name": "Matrix app",
-      "description": "",
-      "help": "",
-      "price": 5
+      "id": "app1",
+      "vid": 401,
+      "iid": "app_enabled",
+      "name": "App One",
+      "description": "Test app",
+      "price": 4
     }
   ],
   "matrixBots": [
     {
-      "id": "bot",
-			"vid": 128,
-      "iid": "matrix_bot",
-      "name": "Matrix bot",
-      "description": "",
-      "help": "",
+      "id": "bot1",
+      "vid": 501,
+      "iid": "bot_enabled",
+      "name": "Bot One",
+      "description": "Test bot",
       "price": 6
     }
   ],
+  "matrixBridgesVID": 601,
+  "matrixBridgesPrice": 7,
   "matrixBridges": [
     {
-      "id": "bridge_a",
-			"vid": 129,
-      "iid": "matrix_bridge_a",
-      "name": "Bridge A",
-      "description": "",
-      "help": "",
-      "price": 20
+      "id": "bridge1",
+      "iid": "bridge_one_enabled",
+      "name": "Bridge One"
     },
     {
-      "id": "bridge_b",
-			"vid": 130,
-      "iid": "matrix_bridge_b",
-      "name": "Bridge B",
-      "description": "",
-      "help": "",
-      "price": 20
+      "id": "bridge2",
+      "iid": "bridge_two_enabled",
+      "name": "Bridge Two"
     }
   ],
-  "matrixBridgesVID": 555,
-  "matrixBridgesPrice": 200,
   "additionalMatrixServices": [
     {
-      "id": "smtp",
-			"vid": 131,
-      "iid": "exim_relay_relay_use",
-      "name": "SMTP relay",
-      "description": "",
-      "help": "",
-      "price": 30
+      "id": "extra1",
+      "vid": 701,
+      "iid": "extra_enabled",
+      "name": "Extra Service",
+      "description": "Test extra service",
+      "price": 8
     }
   ],
   "additionalServices": [
     {
-      "id": "email",
-			"vid": 132,
+      "id": "service-email",
+      "vid": 801,
       "iid": "etke_service_email",
       "name": "Email service",
-      "description": "",
-      "help": "",
-      "price": 70
+      "description": "Email service for tests",
+      "help": "/help/email",
+      "price": 9
+    },
+    {
+      "id": "smtp-relay",
+      "vid": 802,
+      "iid": "exim_relay_relay_use",
+      "name": "SMTP relay for outgoing emails",
+      "description": "SMTP relay for tests",
+      "help": "/help/smtp",
+      "price": 5
     }
   ],
   "archived": "ARCHIVE_URL"
@@ -140,22 +149,23 @@ const fixtureArchiveJSON = `{
       "name": "Archived base",
       "description": "",
       "help": "",
-      "price": 111
+      "price": 42
     }
   ],
-  "matrixBridgesVID": 777,
+  "matrixBridgesVID": 901,
   "instances": {
-    "id": "instances",
-    "iid": "etke_instance_size",
-    "name": "Instance size",
-    "description": "",
-    "help": "",
+    "id": "turnkey",
+    "iid": "etke_service_server",
+    "name": "Servers",
+    "description": "Server plans for tests",
+    "help": "/help/servers",
     "options": [
       {
-        "id": "xlarge",
-        "iid": "etke_instance_size",
-        "name": "XLarge",
-        "price": 90
+        "id": "plan_a",
+        "iid": "etke_service_server",
+        "name": "Plan A",
+        "price": 21,
+        "regions": ["r1", "r2"]
       }
     ]
   }
@@ -193,8 +203,8 @@ func TestSourceModelAppendAndInit(t *testing.T) {
 	s2 := &sourceModel{
 		Bases: []*sourceItem{base},
 		Instances: &sourceSectionItem{
-			ID:          "instances",
-			InventoryID: "etke_instance_size",
+			ID:          "turnkey",
+			InventoryID: "etke_service_server",
 			Options:     []sourceItem{opt},
 		},
 		MatrixBridgesVID:   777,
@@ -373,10 +383,10 @@ func TestConvertToDataPopulatesMaps(t *testing.T) {
 		t.Fatal("expected iidmap to include base item")
 	}
 
-	if data.find("instances", "small") == nil {
+	if data.find("turnkey", "plan_a") == nil {
 		t.Fatal("expected find to resolve section option by id+value")
 	}
-	if data.find("etke_instance_size", "large") == nil {
+	if data.find("etke_service_server", "plan_b") == nil {
 		t.Fatal("expected find to resolve section option by inventory id+value")
 	}
 
@@ -390,8 +400,8 @@ func TestCalculateDefaultBaseMatrix(t *testing.T) {
 	input := map[string]string{}
 
 	total := data.Calculate(input)
-	if total != 100 {
-		t.Fatalf("expected total 100, got %d", total)
+	if total != 11 {
+		t.Fatalf("expected total 11, got %d", total)
 	}
 	if input["etke_base_matrix"] != "yes" {
 		t.Fatalf("expected default etke_base_matrix to be set, got %q", input["etke_base_matrix"])
@@ -402,23 +412,23 @@ func TestCalculateVerboseRegionPrice(t *testing.T) {
 	data := mustConvertData(t, []byte(fixtureComponentsJSON))
 	input := map[string]string{
 		"matrix":                       "no",
-		"etke_service_server_location": "eu",
-		"etke_instance_size":           "large",
+		"etke_service_server_location": "r3",
+		"etke_service_server":          "plan_b",
 	}
 
 	total, verbose := data.CalculateVerbose(input)
-	if total != 70 {
-		t.Fatalf("expected total 70, got %d", total)
+	if total != 31 {
+		t.Fatalf("expected total 31, got %d", total)
 	}
-	item := verbose["etke_instance_size"]
+	item := verbose["etke_service_server"]
 	if item == nil {
-		t.Fatal("expected verbose to include instance item")
+		t.Fatal("expected verbose to include server item")
 	}
-	if item.VID != 125 {
-		t.Fatalf("expected instance VID 125, got %d", item.VID)
+	if item.VID != 202 {
+		t.Fatalf("expected server VID 202, got %d", item.VID)
 	}
-	if item.Price != 70 {
-		t.Fatalf("expected region price 70, got %d", item.Price)
+	if item.Price != 31 {
+		t.Fatalf("expected region price 31, got %d", item.Price)
 	}
 }
 
@@ -426,20 +436,20 @@ func TestCalculateVerboseRegionPriceFallbackToBase(t *testing.T) {
 	data := mustConvertData(t, []byte(fixtureComponentsJSON))
 	input := map[string]string{
 		"matrix":                       "no",
-		"etke_service_server_location": "us",
-		"etke_instance_size":           "large",
+		"etke_service_server_location": "r9",
+		"etke_service_server":          "plan_b",
 	}
 
 	total, verbose := data.CalculateVerbose(input)
-	if total != 80 {
-		t.Fatalf("expected total 80, got %d", total)
+	if total != 31 {
+		t.Fatalf("expected total 31, got %d", total)
 	}
-	item := verbose["etke_instance_size"]
+	item := verbose["etke_service_server"]
 	if item == nil {
-		t.Fatal("expected verbose to include instance item")
+		t.Fatal("expected verbose to include server item")
 	}
-	if item.Price != 80 {
-		t.Fatalf("expected base price 80, got %d", item.Price)
+	if item.Price != 31 {
+		t.Fatalf("expected fallback price 31, got %d", item.Price)
 	}
 }
 
@@ -452,8 +462,8 @@ func TestCalculateVerboseSMTPRelayFreeWithEmail(t *testing.T) {
 	}
 
 	total, verbose := data.CalculateVerbose(input)
-	if total != 70 {
-		t.Fatalf("expected total 70 (email only), got %d", total)
+	if total != 9 {
+		t.Fatalf("expected total 9 (email only), got %d", total)
 	}
 	relay := verbose["exim_relay_relay_use"]
 	if relay == nil {
@@ -473,26 +483,26 @@ func TestCalculateVerboseSMTPRelayFreeWithEmail(t *testing.T) {
 func TestCalculateVerboseSectionPriceOnce(t *testing.T) {
 	data := mustConvertData(t, []byte(fixtureComponentsJSON))
 	input := map[string]string{
-		"matrix":          "no",
-		"matrix_bridge_a": "yes",
-		"matrix_bridge_b": "yes",
+		"matrix":             "no",
+		"bridge_one_enabled": "yes",
+		"bridge_two_enabled": "yes",
 	}
 
 	total, verbose := data.CalculateVerbose(input)
-	if total != 220 {
-		t.Fatalf("expected total 220 (section + one bridge), got %d", total)
+	if total != 7 {
+		t.Fatalf("expected total 7 (section + one bridge), got %d", total)
 	}
 	if verbose["matrix_bridges"] == nil {
 		t.Fatal("expected verbose to include section entry")
 	}
-	if verbose["matrix_bridges"].VID != 555 {
-		t.Fatalf("expected section VID 555, got %d", verbose["matrix_bridges"].VID)
+	if verbose["matrix_bridges"].VID != 601 {
+		t.Fatalf("expected section VID 601, got %d", verbose["matrix_bridges"].VID)
 	}
 	bridgeCount := 0
-	if verbose["matrix_bridge_a"] != nil {
+	if verbose["bridge_one_enabled"] != nil {
 		bridgeCount++
 	}
-	if verbose["matrix_bridge_b"] != nil {
+	if verbose["bridge_two_enabled"] != nil {
 		bridgeCount++
 	}
 	if bridgeCount != 1 {
@@ -503,25 +513,25 @@ func TestCalculateVerboseSectionPriceOnce(t *testing.T) {
 func TestCalculateVerboseMixedSections(t *testing.T) {
 	data := mustConvertData(t, []byte(fixtureComponentsJSON))
 	input := map[string]string{
-		"matrix":             "no",
-		"matrix_bridge_a":    "yes",
-		"matrix_app":         "yes",
-		"matrix_bot":         "yes",
-		"etke_instance_size": "small",
+		"matrix":              "no",
+		"bridge_one_enabled":  "yes",
+		"app_enabled":         "yes",
+		"bot_enabled":         "yes",
+		"etke_service_server": "plan_a",
 	}
 
 	total, verbose := data.CalculateVerbose(input)
-	if total != 261 {
-		t.Fatalf("expected total 261, got %d", total)
+	if total != 38 {
+		t.Fatalf("expected total 38, got %d", total)
 	}
-	if verbose["matrix_app"] == nil || verbose["matrix_app"].VID != 127 {
-		t.Fatalf("expected matrix app VID 127, got %+v", verbose["matrix_app"])
+	if verbose["app_enabled"] == nil || verbose["app_enabled"].VID != 401 {
+		t.Fatalf("expected matrix app VID 401, got %+v", verbose["app_enabled"])
 	}
-	if verbose["matrix_bot"] == nil || verbose["matrix_bot"].VID != 128 {
-		t.Fatalf("expected matrix bot VID 128, got %+v", verbose["matrix_bot"])
+	if verbose["bot_enabled"] == nil || verbose["bot_enabled"].VID != 501 {
+		t.Fatalf("expected matrix bot VID 501, got %+v", verbose["bot_enabled"])
 	}
-	if verbose["etke_instance_size"] == nil || verbose["etke_instance_size"].VID != 124 {
-		t.Fatalf("expected instance VID 124, got %+v", verbose["etke_instance_size"])
+	if verbose["etke_service_server"] == nil || verbose["etke_service_server"].VID != 201 {
+		t.Fatalf("expected server VID 201, got %+v", verbose["etke_service_server"])
 	}
 }
 
@@ -562,8 +572,8 @@ func TestCalculateVerboseTrimsAndLowercases(t *testing.T) {
 	}
 
 	total, verbose := data.CalculateVerbose(input)
-	if total != 100 {
-		t.Fatalf("expected total 100, got %d", total)
+	if total != 11 {
+		t.Fatalf("expected total 11, got %d", total)
 	}
 	if verbose["etke_base_matrix"] == nil {
 		t.Fatal("expected verbose to include base matrix item")
@@ -584,7 +594,7 @@ func TestNewUsesArchiveAndCacheOnError(t *testing.T) {
 		switch req.URL.String() {
 		case componentsURL:
 			body := strings.ReplaceAll(fixtureComponentsJSON, "ARCHIVE_URL", archiveURL)
-			body = strings.ReplaceAll(body, "\"matrixBridgesVID\": 555,\n", "")
+			body = strings.ReplaceAll(body, "  \"matrixBridgesVID\": 601,\n", "")
 			return testResponse(body), nil
 		case archiveURL:
 			return testResponse(fixtureArchiveJSON), nil
@@ -597,18 +607,18 @@ func TestNewUsesArchiveAndCacheOnError(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected New to succeed, got %v", err)
 	}
-	if data.find("instances", "xlarge") == nil {
+	if data.find("turnkey", "plan_a") == nil {
 		t.Fatal("expected archive instance option to be available")
 	}
 	_, verbose := data.CalculateVerbose(map[string]string{
-		"matrix":          "no",
-		"matrix_bridge_a": "yes",
+		"matrix":             "no",
+		"bridge_one_enabled": "yes",
 	})
 	if verbose["matrix_bridges"] == nil {
 		t.Fatal("expected verbose to include matrix bridges section")
 	}
-	if verbose["matrix_bridges"].VID != 777 {
-		t.Fatalf("expected archived section VID 777, got %d", verbose["matrix_bridges"].VID)
+	if verbose["matrix_bridges"].VID != 901 {
+		t.Fatalf("expected archived section VID 901, got %d", verbose["matrix_bridges"].VID)
 	}
 
 	setCache(data)
@@ -658,7 +668,7 @@ func TestCloneReturnsCopy(t *testing.T) {
 		InventoryID: "iid",
 		Name:        "Name",
 		Price:       10,
-		RegionPrice: map[string]int{"eu": 9},
+		Regions:     []string{"eu"},
 	}
 	clone := item.Clone()
 	if clone == item {
@@ -667,26 +677,26 @@ func TestCloneReturnsCopy(t *testing.T) {
 	if clone.ID != item.ID || clone.InventoryID != item.InventoryID || clone.Name != item.Name || clone.Price != item.Price {
 		t.Fatal("expected Clone to copy item values")
 	}
-	if len(clone.RegionPrice) != len(item.RegionPrice) {
-		t.Fatal("expected Clone to copy region prices")
+	if len(clone.Regions) != len(item.Regions) {
+		t.Fatal("expected Clone to copy regions")
 	}
-	if clone.RegionPrice["eu"] != 9 {
-		t.Fatalf("expected region price to be preserved, got %d", clone.RegionPrice["eu"])
+	if clone.Regions[0] != "eu" {
+		t.Fatalf("expected region to be preserved, got %q", clone.Regions[0])
 	}
 }
 
-func TestCloneDeepCopiesRegionPriceMap(t *testing.T) {
+func TestCloneDeepCopiesRegions(t *testing.T) {
 	item := &Item{
 		ID:          "id",
 		InventoryID: "iid",
 		Name:        "Name",
 		Price:       10,
-		RegionPrice: map[string]int{"eu": 9},
+		Regions:     []string{"eu"},
 	}
 	clone := item.Clone()
-	clone.RegionPrice["eu"] = 11
-	if item.RegionPrice["eu"] != 9 {
-		t.Fatal("expected Clone to deep copy RegionPrice map")
+	clone.Regions[0] = "us"
+	if item.Regions[0] != "eu" {
+		t.Fatal("expected Clone to deep copy Regions slice")
 	}
 }
 
