@@ -197,7 +197,7 @@ func TestSourceModelAppendAndInit(t *testing.T) {
 	nilSource.append(&sourceModel{})
 
 	base := &sourceItem{ID: "base", InventoryID: "base_iid", Name: "Base", Price: 1}
-	opt := sourceItem{ID: "opt", InventoryID: "opt_iid", Name: "Option", Price: 2}
+	opt := &sourceItem{ID: "opt", InventoryID: "opt_iid", Name: "Option", Price: 2}
 
 	s1 := &sourceModel{}
 	s2 := &sourceModel{
@@ -205,7 +205,7 @@ func TestSourceModelAppendAndInit(t *testing.T) {
 		Instances: &sourceSectionItem{
 			ID:          "turnkey",
 			InventoryID: "etke_service_server",
-			Options:     []sourceItem{opt},
+			Options:     []*sourceItem{opt},
 		},
 		MatrixBridgesVID:   777,
 		MatrixBridgesPrice: 200,
@@ -729,7 +729,7 @@ func TestFromSourceItemAndSectionMapping(t *testing.T) {
 			Name:        "Instances",
 			Description: "Instance description",
 			Help:        "/help/instances",
-			Options: []sourceItem{
+			Options: []*sourceItem{
 				{
 					ID:          "small",
 					InventoryID: "instances_iid",
