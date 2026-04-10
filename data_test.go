@@ -490,7 +490,7 @@ func TestCalculateVerboseSectionPriceOnce(t *testing.T) {
 
 	total, verbose := data.CalculateVerbose(input)
 	if total != 7 {
-		t.Fatalf("expected total 7 (section + one bridge), got %d", total)
+		t.Fatalf("expected total 7 (section + bridges), got %d", total)
 	}
 	if verbose["matrix_bridges"] == nil {
 		t.Fatal("expected verbose to include section entry")
@@ -505,8 +505,8 @@ func TestCalculateVerboseSectionPriceOnce(t *testing.T) {
 	if verbose["bridge_two_enabled"] != nil {
 		bridgeCount++
 	}
-	if bridgeCount != 1 {
-		t.Fatalf("expected exactly 1 bridge entry in verbose, got %d", bridgeCount)
+	if bridgeCount != 2 {
+		t.Fatalf("expected exactly 2 bridge entries in verbose, got %d", bridgeCount)
 	}
 }
 

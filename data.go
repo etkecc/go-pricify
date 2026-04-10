@@ -239,6 +239,9 @@ func (d *Data) CalculateVerbose(input map[string]string) (total int, verbose map
 				Price:       item.SectionPrice,
 				Regions:     item.Regions,
 			}
+			dup := item.Clone()
+			dup.Value = value
+			verbose[item.InventoryID] = dup
 			continue
 		}
 
