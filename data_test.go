@@ -565,6 +565,59 @@ func TestCalculateForbiddenValuesSkipDefaultOnInventoryID(t *testing.T) {
 	}
 }
 
+func TestCalculateVerboseBoolTrueAliasesYes(t *testing.T) {
+	data := mustConvertData(t, []byte(fixtureComponentsJSON))
+	input := map[string]string{
+		"matrix":      "no",
+		"app_enabled": "true",
+	}
+
+	total, verbose := data.CalculateVerbose(input)
+	if total != 4 {
+		t.Fatalf("expected total 4 with bool-string true, got %d", total)
+	}
+	item := verbose["app_enabled"]
+	if item == nil {
+		t.Fatal("expected app_enabled to be included when value is bool-string true")
+	}
+	if item.Value != "yes" {
+		t.Fatalf("expected canonical Value yes, got %q", item.Value)
+	}
+}
+
+func TestCalculateVerboseBoolTrueMixedCaseAliasesYes(t *testing.T) {
+	data := mustConvertData(t, []byte(fixtureComponentsJSON))
+	input := map[string]string{
+		"matrix":      "no",
+		"app_enabled": " True ",
+	}
+
+	total, verbose := data.CalculateVerbose(input)
+	if total != 4 {
+		t.Fatalf("expected total 4 with mixed-case True, got %d", total)
+	}
+	item := verbose["app_enabled"]
+	if item == nil || item.Value != "yes" {
+		t.Fatalf("expected canonical Value yes for mixed-case True, got %+v", item)
+	}
+}
+
+func TestCalculateVerboseBoolFalseAliasesNo(t *testing.T) {
+	data := mustConvertData(t, []byte(fixtureComponentsJSON))
+	input := map[string]string{
+		"matrix":      "no",
+		"app_enabled": "False",
+	}
+
+	total, verbose := data.CalculateVerbose(input)
+	if total != 0 {
+		t.Fatalf("expected total 0 with False, got %d", total)
+	}
+	if verbose["app_enabled"] != nil {
+		t.Fatal("expected app_enabled to be excluded for False")
+	}
+}
+
 func TestCalculateVerboseTrimsAndLowercases(t *testing.T) {
 	data := mustConvertData(t, []byte(fixtureComponentsJSON))
 	input := map[string]string{
