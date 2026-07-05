@@ -2,9 +2,10 @@ package pricify
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"io"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 )
@@ -307,12 +308,6 @@ func TestConvertToDataNilSections(t *testing.T) {
 }
 
 func TestNewHandlesMissingSections(t *testing.T) {
-	origTransport := http.DefaultTransport
-	defer func() {
-		http.DefaultTransport = origTransport
-	}()
-
-	const componentsURL = "http://example.test/missing-sections"
 	payload := `{
   "bases": [
     {
@@ -326,14 +321,12 @@ func TestNewHandlesMissingSections(t *testing.T) {
   ]
 }`
 
-	http.DefaultTransport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
-		if req.URL.String() != componentsURL {
-			return nil, http.ErrServerClosed
-		}
-		return testResponse(payload), nil
-	})
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(payload))
+	}))
+	defer srv.Close()
 
-	data, err := New(componentsURL)
+	data, err := New(context.Background(), srv.URL)
 	if err != nil {
 		t.Fatalf("expected New to succeed, got %v", err)
 	}
@@ -635,28 +628,27 @@ func TestCalculateVerboseTrimsAndLowercases(t *testing.T) {
 
 func TestNewUsesArchiveAndCacheOnError(t *testing.T) {
 	cached = nil
-	origTransport := http.DefaultTransport
-	defer func() {
-		http.DefaultTransport = origTransport
-	}()
 
-	archiveURL := "http://example.test/archive"
-	componentsURL := "http://example.test/components"
+	// archive server started first so its URL can be baked into the components body
+	// before the components handler closure exists: no self-referential srv read, no race.
+	archiveSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(fixtureArchiveJSON))
+	}))
+	defer archiveSrv.Close()
 
-	http.DefaultTransport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
-		switch req.URL.String() {
-		case componentsURL:
-			body := strings.ReplaceAll(fixtureComponentsJSON, "ARCHIVE_URL", archiveURL)
-			body = strings.ReplaceAll(body, "  \"matrixBridgesVID\": 601,\n", "")
-			return testResponse(body), nil
-		case archiveURL:
-			return testResponse(fixtureArchiveJSON), nil
-		default:
-			return nil, http.ErrServerClosed
+	componentsBody := strings.ReplaceAll(fixtureComponentsJSON, "ARCHIVE_URL", archiveSrv.URL)
+	componentsBody = strings.ReplaceAll(componentsBody, "  \"matrixBridgesVID\": 601,\n", "")
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/bad" {
+			_, _ = w.Write([]byte("{"))
+			return
 		}
-	})
+		_, _ = w.Write([]byte(componentsBody))
+	}))
+	defer srv.Close()
 
-	data, err := New(componentsURL)
+	data, err := New(context.Background(), srv.URL)
 	if err != nil {
 		t.Fatalf("expected New to succeed, got %v", err)
 	}
@@ -675,14 +667,7 @@ func TestNewUsesArchiveAndCacheOnError(t *testing.T) {
 	}
 
 	setCache(data)
-	http.DefaultTransport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
-		if req.URL.String() == "http://example.test/bad" {
-			return testResponse("{"), nil
-		}
-		return nil, http.ErrServerClosed
-	})
-
-	cachedData, err := New("http://example.test/bad")
+	cachedData, err := New(context.Background(), srv.URL+"/bad")
 	if err == nil {
 		t.Fatal("expected New to return error for invalid JSON")
 	}
@@ -692,21 +677,14 @@ func TestNewUsesArchiveAndCacheOnError(t *testing.T) {
 }
 
 func TestLoadRejectsHTTPStatus(t *testing.T) {
-	origTransport := http.DefaultTransport
-	defer func() {
-		http.DefaultTransport = origTransport
-	}()
+	// 500 is retryable in httpclient, so load exhausts its retry budget before the
+	// non-200 rejection lands. The handler is stateless, every attempt gets the 500.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer srv.Close()
 
-	http.DefaultTransport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
-		if req.URL.String() != "http://example.test/status" {
-			return nil, http.ErrServerClosed
-		}
-		resp := testResponse(fixtureArchiveJSON)
-		resp.StatusCode = http.StatusInternalServerError
-		return resp, nil
-	})
-
-	source, err := load("http://example.test/status")
+	source, err := load(context.Background(), srv.URL)
 	if err == nil {
 		t.Fatal("expected load to fail for non-200 status")
 	}
@@ -812,19 +790,5 @@ func TestFromSourceItemAndSectionMapping(t *testing.T) {
 	}
 	if instance.Description != "Instance description" || instance.Help != "/help/instances" {
 		t.Fatal("expected instance description/help to be mapped from section")
-	}
-}
-
-type roundTripFunc func(*http.Request) (*http.Response, error)
-
-func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
-	return f(req)
-}
-
-func testResponse(body string) *http.Response {
-	return &http.Response{
-		StatusCode: http.StatusOK,
-		Body:       io.NopCloser(strings.NewReader(body)),
-		Header:     make(http.Header),
 	}
 }
