@@ -629,8 +629,7 @@ func TestCalculateVerboseTrimsAndLowercases(t *testing.T) {
 func TestNewUsesArchiveAndCacheOnError(t *testing.T) {
 	cached = nil
 
-	// archive server started first so its URL can be baked into the components body
-	// before the components handler closure exists: no self-referential srv read, no race.
+	// archive server starts first so its URL bakes into the components body before that handler closure exists.
 	archiveSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = w.Write([]byte(fixtureArchiveJSON))
 	}))
@@ -677,8 +676,7 @@ func TestNewUsesArchiveAndCacheOnError(t *testing.T) {
 }
 
 func TestLoadRejectsHTTPStatus(t *testing.T) {
-	// 500 is retryable in httpclient, so load exhausts its retry budget before the
-	// non-200 rejection lands. The handler is stateless, every attempt gets the 500.
+	// 500 is retryable in httpclient, so load exhausts retries before the non-200 rejection lands (handler is stateless).
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}))

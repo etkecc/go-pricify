@@ -12,11 +12,7 @@ var forbiddenValues = map[string]struct{}{
 	"false": {},
 }
 
-// boolAliases normalizes YAML bool-string representations to the canonical
-// yes/no form used by source item Values. Without this, inputs stringified
-// from YAML bools (e.g. `key: true` → "true") would not match the source
-// Item.Value "yes" set in fromSourceItem, causing equality checks against
-// the canonical Value to fail for boolean-enabled single-variant items.
+// boolAliases maps stringified YAML bools to the canonical yes/no form fromSourceItem's Item.Value expects.
 var boolAliases = map[string]string{
 	"true":  "yes",
 	"false": "no",
